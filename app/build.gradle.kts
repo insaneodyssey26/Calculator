@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.masum.calculatorbasic"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.masum.calculatorbasic"
