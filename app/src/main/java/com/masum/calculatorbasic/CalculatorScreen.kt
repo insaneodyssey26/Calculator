@@ -62,6 +62,26 @@ fun CalculatorScreen(
                         onAction(Actions.clear)
                     }
                 )
+                Buttons(
+                    symbol = "Del",
+                    modifier = Modifier
+                        .background(LightGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.delete)
+                    }
+                )
+                Buttons(
+                    symbol = "/",
+                    modifier = Modifier
+                        .background(LightGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Operation(Operations.Divide))
+                    }
+                )
             }
         }
     }
