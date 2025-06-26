@@ -175,6 +175,51 @@ fun CalculatorScreen(
                     }
                 )
             }
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                Buttons(
+                    symbol = "1",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(1))
+                    }
+                )
+                Buttons(
+                    symbol = "2",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(2))
+                    }
+                )
+                Buttons(
+                    symbol = "3",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(3))
+                    }
+                )
+                Buttons(
+                    symbol = "+",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Operation(Operations.Add))
+                    }
+                )
+            }
         }
     }
 }
