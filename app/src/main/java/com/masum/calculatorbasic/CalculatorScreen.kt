@@ -61,7 +61,7 @@ fun CalculatorScreen(
                         .weight(2f)
                         .aspectRatio(2f),
                     onClick = {
-                        onAction(Actions.clear)
+                        onAction(Actions.Clear)
                     }
                 )
                 Buttons(
@@ -71,7 +71,7 @@ fun CalculatorScreen(
                         .weight(1f)
                         .aspectRatio(1f),
                     onClick = {
-                        onAction(Actions.delete)
+                        onAction(Actions.Delete)
                     }
                 )
                 Buttons(
@@ -241,7 +241,7 @@ fun CalculatorScreen(
                         .weight(1f)
                         .aspectRatio(1f),
                     onClick = {
-                        onAction(Actions.decimal)
+                        onAction(Actions.Decimal)
                     }
                 )
                 Buttons(
@@ -251,7 +251,7 @@ fun CalculatorScreen(
                         .weight(1f)
                         .aspectRatio(1f),
                     onClick = {
-                        onAction(Actions.calculate)
+                        onAction(Actions.Calculate)
                     }
                 )
             }
