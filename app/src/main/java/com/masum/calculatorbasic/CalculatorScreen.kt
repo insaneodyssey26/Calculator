@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.LightGray
+import com.masum.calculatorbasic.ui.theme.MediumGray
+import com.masum.calculatorbasic.ui.theme.Orange
 
 @Composable
 fun CalculatorScreen(
@@ -75,11 +77,56 @@ fun CalculatorScreen(
                 Buttons(
                     symbol = "/",
                     modifier = Modifier
-                        .background(LightGray)
+                        .background(Orange)
                         .weight(1f)
                         .aspectRatio(1f),
                     onClick = {
                         onAction(Actions.Operation(Operations.Divide))
+                    }
+                )
+            }
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                Buttons(
+                    symbol = "7",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(7))
+                    }
+                )
+                Buttons(
+                    symbol = "8",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(8))
+                    }
+                )
+                Buttons(
+                    symbol = "9",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(9))
+                    }
+                )
+                Buttons(
+                    symbol = "X",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.Number(7))
                     }
                 )
             }
