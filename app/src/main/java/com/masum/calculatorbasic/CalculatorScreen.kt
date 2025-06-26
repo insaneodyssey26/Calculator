@@ -126,7 +126,7 @@ fun CalculatorScreen(
                         .weight(1f)
                         .aspectRatio(1f),
                     onClick = {
-                        onAction(Actions.Number(7))
+                        onAction(Actions.Operation(Operations.Multiply))
                     }
                 )
             }
