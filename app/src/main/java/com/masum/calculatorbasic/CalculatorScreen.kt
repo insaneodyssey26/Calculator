@@ -220,6 +220,41 @@ fun CalculatorScreen(
                     }
                 )
             }
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                Buttons(
+                    symbol = "0",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(2f)
+                        .aspectRatio(2f),
+                    onClick = {
+                        onAction(Actions.Number(0))
+                    }
+                )
+                Buttons(
+                    symbol = ".",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.decimal)
+                    }
+                )
+                Buttons(
+                    symbol = "=",
+                    modifier = Modifier
+                        .background(MediumGray)
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = {
+                        onAction(Actions.calculate)
+                    }
+                )
+            }
         }
     }
 }
