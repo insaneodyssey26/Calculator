@@ -7,4 +7,5 @@ import androidx.lifecycle.ViewModel
 
 class CalculatorViewModel: ViewModel() {
     var state by mutableStateOf(States())
+    private set
 }
