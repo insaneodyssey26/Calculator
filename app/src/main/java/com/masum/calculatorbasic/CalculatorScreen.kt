@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.LightGray
@@ -27,7 +28,8 @@ import com.masum.calculatorbasic.ui.theme.Orange
 
 @Composable
 fun CalculatorScreen(
-    states: States,
+    state: States,
+    buttonSpacing: Dp = 8.dp,
     modifier: Modifier = Modifier,
     onAction: (Actions) -> Unit
     ) {
@@ -38,10 +40,10 @@ fun CalculatorScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(buttonSpacing)
         ) {
             Text(
-                text = states.number1 + (states.operation?.symbol?: "") + states.number2,
+                text = state.number1 + (state.operation?.symbol?: "") + state.number2,
                 textAlign = TextAlign.End,
                 modifier = Modifier.fillMaxWidth()
                     .padding(16.dp),
@@ -52,7 +54,7 @@ fun CalculatorScreen(
             )
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
                 Buttons(
                     symbol = "AC",
@@ -87,7 +89,7 @@ fun CalculatorScreen(
             }
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 Buttons(
                     symbol = "7",
@@ -132,7 +134,7 @@ fun CalculatorScreen(
             }
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 Buttons(
                     symbol = "4",
@@ -177,7 +179,7 @@ fun CalculatorScreen(
             }
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 Buttons(
                     symbol = "1",
@@ -222,7 +224,7 @@ fun CalculatorScreen(
             }
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ){
                 Buttons(
                     symbol = "0",
