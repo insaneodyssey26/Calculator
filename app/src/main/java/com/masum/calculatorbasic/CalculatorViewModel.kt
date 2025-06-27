@@ -15,8 +15,23 @@ class CalculatorViewModel: ViewModel() {
             is Actions.Number -> enterNumber(action.number)
             is Actions.Operation -> enterOperation(action.operation)
             Actions.Clear -> clear()
-            Actions.Calculate -> calculate()
-            Actions.Delete -> delete()
+            Actions.Calculate -> CalculateThis()
+            Actions.Delete -> justDelete()
         }
     }
+
+    private fun CalculateThis(operation: Operations) {
+
+    }
+
+    private fun justDelete() {
+    }
+
+    private fun enterOperation(operation: Operations) {
+        if (state.number1.isNotBlank()) {
+            state = state.copy(operation = operation)
+        }
+    }
+
+    private fun enterNumber(number: Int) {}
 }
