@@ -46,11 +46,11 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun Decimal() {
-        if (state.operation == null
-            && !state.number1.contains(".")
-            && state.number1.isNotBlank())
+        if (state.operation == null    // Jokhon kono operation thake na
+            && !state.number1.contains(".")    // Jokhon number1 e kono decimal point na thake
+            && state.number1.isNotBlank())    // Jokhon number1 e kono value thake
             state = state.copy(
-                number1 = state.number1 + "."
+                number1 = state.number1 + "."   // Oporer 3 te criteria satisfy hole then only decimal point add hobe
             )
         return
     }
