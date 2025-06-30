@@ -39,10 +39,19 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterOperation(operation: Operations) {
-        if (state.number1.isNotBlank()) {
-            state = state.copy(operation = operation)
-        }
     }
 
-    private fun enterNumber(number: Int) {}
+    private fun enterNumber(number: Int) {
+
+    }
+
+    private fun Decimal() {
+        if (state.operation == null
+            && !state.number1.contains(".")
+            && state.number1.isNotBlank())
+            state = state.copy(
+                number1 = state.number1 + "."
+            )
+        return
+    }
 }
