@@ -25,6 +25,10 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun justDelete() {
+        when {
+            state.number2.isNotBlank() -> state = state.copy(
+                number2 = state.number2.dropLast(1)
+        }
     }
 
     private fun enterOperation(operation: Operations) {
