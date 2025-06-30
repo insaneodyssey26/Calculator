@@ -28,6 +28,10 @@ class CalculatorViewModel: ViewModel() {
         when {
             state.number2.isNotBlank() -> state = state.copy(
                 number2 = state.number2.dropLast(1)
+            )
+            state.operation != null -> state = state.copy(
+                operation = null
+            )
         }
     }
 
