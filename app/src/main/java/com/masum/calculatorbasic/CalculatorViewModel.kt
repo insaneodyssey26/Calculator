@@ -39,6 +39,9 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterOperation(operation: Operations) {
+        if(state.number1.isNotBlank()) {
+            state = state.copy(operation = operation)
+        }
     }
 
     private fun enterNumber(number: Int) {
