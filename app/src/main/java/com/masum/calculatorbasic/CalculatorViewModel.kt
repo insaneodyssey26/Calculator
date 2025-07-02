@@ -11,10 +11,10 @@ class CalculatorViewModel: ViewModel() {
     private set
 
     fun onAction (action: Actions) {
-        when (action) {
+        when(action) {
             is Actions.Number -> enterNumber(action.number)
             is Actions.Operation -> enterOperation(action.operation)
-            Actions.Clear -> clear()
+            Actions.Clear -> state = States() // Reset the state to initial values
             Actions.Calculate -> CalculateThis()
             Actions.Delete -> justDelete()
         }
