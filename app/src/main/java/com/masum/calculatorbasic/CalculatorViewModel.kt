@@ -58,7 +58,7 @@ class CalculatorViewModel: ViewModel() {
             return
         }
         else if (!state.number2.contains(".")
-            && !state.number2.isNotBlank()) {
+            && !state.number2.isNotBlank()) {     // operation null er jonno check korte hobe na karon, ota null hole 2nd number enter hobe na
             state  = state.copy(
                 number2 = state.number2 + "."
             )
