@@ -30,6 +30,11 @@ class CalculatorViewModel: ViewModel() {
                 is Operations.Multiply -> number1 * number2
                 is Operations.Divide -> number1 / number2
             }
+            state = state.copy(
+                number1 = result.toString().take(15),
+                number2 = "",
+                operation = null
+            )
         }
     }
 
