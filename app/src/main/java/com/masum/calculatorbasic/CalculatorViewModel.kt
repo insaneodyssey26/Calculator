@@ -45,7 +45,15 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterNumber(number: Int) {
-
+        if (state.operation == null) {
+            if (state.number1.length >= MAX_LENGTH) {
+                return
+            }
+            state = state.copy(
+                number1 = state.number1 + number
+            )
+            return
+        }
     }
 
     private fun Decimal() {
