@@ -26,6 +26,7 @@ class CalculatorViewModel: ViewModel() {
         if (number1 != null && number2 !=null) {
             var result = when(state.operation) {
                 is Operations.Add -> number1 + number2
+                is Operations.Subtract -> number1 - number2
             }
         }
     }
