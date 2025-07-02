@@ -64,4 +64,8 @@ class CalculatorViewModel: ViewModel() {
             )
         }
     }
+
+    companion object {
+        private const val  MAX_LENGTH = 8
+    }
 }
