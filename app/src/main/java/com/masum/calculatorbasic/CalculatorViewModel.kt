@@ -20,8 +20,14 @@ class CalculatorViewModel: ViewModel() {
         }
     }
 
-    private fun CalculateThis(operation: Operations) {
-
+    private fun CalculateThis() {
+        val number1 = state.number1.toDoubleOrNull()
+        val number2 = state.number2.toDoubleOrNull()
+        if (number1 != null && number2 !=null) {
+            var result = when(state.operation) {
+                is Operations.Add -> number1 + number2
+            }
+        }
     }
 
     private fun justDelete() {
