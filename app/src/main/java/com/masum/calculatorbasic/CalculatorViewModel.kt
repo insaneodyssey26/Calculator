@@ -28,6 +28,7 @@ class CalculatorViewModel: ViewModel() {
                 is Operations.Add -> number1 + number2
                 is Operations.Subtract -> number1 - number2
                 is Operations.Multiply -> number1 * number2
+                is Operations.Divide -> number1 / number2
             }
         }
     }
