@@ -1,6 +1,5 @@
 package com.masum.calculatorbasic
 
-import android.service.credentials.Action
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,7 +24,7 @@ class CalculatorViewModel: ViewModel() {
         val number1 = state.number1.toDoubleOrNull()
         val number2 = state.number2.toDoubleOrNull()
         if (number1 != null && number2 !=null) {
-            var result = when(state.operation) {
+            val result = when(state.operation) {
                 is Operations.Add -> number1 + number2
                 is Operations.Subtract -> number1 - number2
                 is Operations.Multiply -> number1 * number2
