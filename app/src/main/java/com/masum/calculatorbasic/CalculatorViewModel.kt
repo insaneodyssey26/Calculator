@@ -54,6 +54,12 @@ class CalculatorViewModel: ViewModel() {
             )
             return
         }
+        if (state.number2.length >= MAX_LENGTH) {
+            return
+        }
+        state = state.copy(
+            number2 = state.number2 + number
+        )
     }
 
     private fun Decimal() {
