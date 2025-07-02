@@ -14,9 +14,10 @@ class CalculatorViewModel: ViewModel() {
         when(action) {
             is Actions.Number -> enterNumber(action.number)
             is Actions.Operation -> enterOperation(action.operation)
-            Actions.Clear -> state = States() // Reset the state to initial values
+            Actions.Clear -> state = States() // State ta puro reset kore debe, // mane number1, number2, operation sobgulo ke null kore debe
             Actions.Calculate -> CalculateThis()
             Actions.Delete -> justDelete()
+            Actions.Decimal -> Decimal()
         }
     }
 
