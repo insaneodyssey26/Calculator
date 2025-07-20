@@ -152,7 +152,6 @@ fun CalculatorScreen(
                 }
             }
             
-            // Scientific function buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
