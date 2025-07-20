@@ -7,4 +7,7 @@ sealed class Actions {
     object Calculate: Actions()
     object Decimal: Actions()
     data class Operation (val operation: Operations): Actions()
+    object ToggleHistory: Actions()
+    object ClearHistory: Actions()
+    data class UseHistoryResult(val result: String): Actions()
 }
