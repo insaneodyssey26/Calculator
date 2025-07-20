@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.text.DecimalFormat
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 class CalculatorViewModel: ViewModel() {
     var state by mutableStateOf(States())
@@ -25,13 +26,9 @@ class CalculatorViewModel: ViewModel() {
             Actions.Decimal -> enterDecimal()
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
             Actions.ClearHistory -> state = state.copy(history = emptyList())
-            is Actions.UseHistoryResult -> {
-                state = state.copy(
-                    number1 = action.result,
-                    number2 = "",
-                    operation = null,
-                    showHistory = false
-                )
+                is Actions.UnaryOperation -> performUnary(action.operation)
+            else -> {
+
             }
         }
     }
@@ -135,5 +132,25 @@ class CalculatorViewModel: ViewModel() {
         private const val MAX_NUMBER_LENGTH = 10
         private const val MAX_DISPLAY_LENGTH = 12
         private const val MAX_HISTORY_SIZE = 20
+    }
+    
+    // Handle unary operations like percent, sqrt, square, reciprocal, plus/minus
+    private fun performUnary(op: Operations) {
+        val targetText = if (state.operation == null) state.number1 else state.number2
+        val value = targetText.toDoubleOrNull() ?: return
+        val result = when(op) {
+            is Operations.Percent -> value / 100
+            is Operations.PlusMinus -> -value
+            is Operations.Sqrt -> if (value >= 0) sqrt(value) else value
+            is Operations.Square -> value * value
+            is Operations.Reciprocal -> if (value != 0.0) 1 / value else value
+            else -> return
+        }
+        val formatted = formatter.format(result).take(MAX_DISPLAY_LENGTH)
+        state = if (state.operation == null) {
+            state.copy(number1 = formatted)
+        } else {
+            state.copy(number2 = formatted)
+        }
     }
 }

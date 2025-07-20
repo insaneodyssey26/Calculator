@@ -30,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -150,6 +152,43 @@ fun CalculatorScreen(
                 }
             }
             
+            // Scientific function buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+            ) {
+                Buttons(
+                    symbol = "%",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    onClick = { onAction(Actions.UnaryOperation(Operations.Percent)) }
+                )
+                Buttons(
+                    symbol = "±",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    onClick = { onAction(Actions.UnaryOperation(Operations.PlusMinus)) }
+                )
+                Buttons(
+                    symbol = "√",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    onClick = { onAction(Actions.UnaryOperation(Operations.Sqrt)) }
+                )
+                Buttons(
+                    symbol = "x²",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    onClick = { onAction(Actions.UnaryOperation(Operations.Square)) }
+                )
+                Buttons(
+                    symbol = "1/x",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    onClick = { onAction(Actions.UnaryOperation(Operations.Reciprocal)) }
+                )
+            }
+            Spacer(modifier = Modifier.height(buttonSpacing))
             Column(
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
