@@ -120,18 +120,26 @@ fun CalculatorScreen(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.End
                     ) {
-                        if (state.number1.isNotEmpty() && state.operation != null) {
+                        val expression = buildString {
+                            append(state.number1)
+                            if (state.operation != null) append(" ${state.operation.symbol}")
+                        }
+                        if (expression.isNotBlank()) {
                             Text(
-                                text = "${state.number1} ${state.operation.symbol}",
+                                text = expression,
                                 fontSize = 20.sp,
                                 color = DisplaySecondary,
                                 textAlign = TextAlign.End,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = 1
                             )
                         }
-                        
+                        val mainDisplay = when {
+                            state.number2.isNotEmpty() -> state.number2
+                            else -> state.number1
+                        }
                         Crossfade(
-                            targetState = state.number1 + (state.operation?.symbol ?: "") + state.number2,
+                            targetState = mainDisplay,
                             label = "calculator_display"
                         ) { displayText ->
                             Text(
