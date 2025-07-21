@@ -7,6 +7,12 @@ import androidx.lifecycle.ViewModel
 import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.sqrt
+import kotlin.math.sin
+import kotlin.math.cos
+import kotlin.math.tan
+import kotlin.math.ln
+import kotlin.math.log10
+import kotlin.math.pow
 
 class CalculatorViewModel: ViewModel() {
     var state by mutableStateOf(States())
@@ -26,13 +32,16 @@ class CalculatorViewModel: ViewModel() {
             Actions.Decimal -> enterDecimal()
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
             Actions.ClearHistory -> state = state.copy(history = emptyList())
+            Actions.ToggleScientific -> state = state.copy(showScientific = !state.showScientific)
             is Actions.UnaryOperation -> performUnary(action.operation)
             is Actions.DeleteHistoryItem -> {
                 state = state.copy(history = state.history.filterNot { it == action.item })
             }
-
-            else -> {
-
+            is Actions.UseHistoryResult -> {
+                state = state.copy(
+                    number1 = action.result,
+                    showHistory = false
+                )
             }
         }
     }
@@ -148,6 +157,16 @@ class CalculatorViewModel: ViewModel() {
             is Operations.Sqrt -> if (value >= 0) sqrt(value) else value
             is Operations.Square -> value * value
             is Operations.Reciprocal -> if (value != 0.0) 1 / value else value
+            is Operations.Sin -> sin(Math.toRadians(value))
+            is Operations.Cos -> cos(Math.toRadians(value))
+            is Operations.Tan -> tan(Math.toRadians(value))
+            is Operations.Ln -> if (value > 0) ln(value) else value
+            is Operations.Log -> if (value > 0) log10(value) else value
+            is Operations.Factorial -> {
+                if (value >= 0 && value <= 20 && value == value.toInt().toDouble()) {
+                    factorial(value.toInt()).toDouble()
+                } else value
+            }
             else -> return
         }
         val formatted = formatter.format(result).take(MAX_DISPLAY_LENGTH)
@@ -156,5 +175,9 @@ class CalculatorViewModel: ViewModel() {
         } else {
             state.copy(number2 = formatted)
         }
+    }
+    
+    private fun factorial(n: Int): Long {
+        return if (n <= 1) 1 else n * factorial(n - 1)
     }
 }

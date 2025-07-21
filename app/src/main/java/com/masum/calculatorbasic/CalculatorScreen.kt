@@ -10,10 +10,16 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.*
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CalculatorScreen(
     state: States,
@@ -171,70 +178,179 @@ fun CalculatorScreen(
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
                 Buttons(
-                    symbol = "%",
+                    symbol = "f(x)",
                     buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
-                    onClick = { onAction(Actions.UnaryOperation(Operations.Percent)) }
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = { onAction(Actions.ToggleScientific) }
                 )
                 Buttons(
-                    symbol = "±",
+                    symbol = "AC",
                     buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
-                    onClick = { onAction(Actions.UnaryOperation(Operations.PlusMinus)) }
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .aspectRatio(1.5f),
+                    onClick = { onAction(Actions.Clear) }
                 )
                 Buttons(
-                    symbol = "√",
+                    symbol = "Del",
                     buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
-                    onClick = { onAction(Actions.UnaryOperation(Operations.Sqrt)) }
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = { onAction(Actions.Delete) }
                 )
                 Buttons(
-                    symbol = "x²",
-                    buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
-                    onClick = { onAction(Actions.UnaryOperation(Operations.Square)) }
+                    symbol = "÷",
+                    buttonType = ButtonType.OPERATOR,
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = { onAction(Actions.Operation(Operations.Divide)) }
                 )
-                Buttons(
-                    symbol = "1/x",
-                    buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
-                    onClick = { onAction(Actions.UnaryOperation(Operations.Reciprocal)) }
+            }
+            
+            AnimatedVisibility(
+                visible = state.showScientific,
+                enter = expandVertically(
+                    animationSpec = tween(durationMillis = 300)
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(durationMillis = 300)
                 )
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DisplayBackground.copy(alpha = 0.6f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(buttonSpacing)
+                    ) {
+                        // First row: %, ±, √, x²
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+                        ) {
+                            Buttons(
+                                symbol = "%",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Percent)) }
+                            )
+                            Buttons(
+                                symbol = "±",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.PlusMinus)) }
+                            )
+                            Buttons(
+                                symbol = "√",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Sqrt)) }
+                            )
+                            Buttons(
+                                symbol = "x²",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Square)) }
+                            )
+                        }
+                        
+                        // Second row: 1/x, sin, cos, tan
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+                        ) {
+                            Buttons(
+                                symbol = "1/x",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Reciprocal)) }
+                            )
+                            Buttons(
+                                symbol = "sin",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Sin)) }
+                            )
+                            Buttons(
+                                symbol = "cos",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Cos)) }
+                            )
+                            Buttons(
+                                symbol = "tan",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Tan)) }
+                            )
+                        }
+                        
+                        // Third row: ln, log, !, (empty space)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+                        ) {
+                            Buttons(
+                                symbol = "ln",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Ln)) }
+                            )
+                            Buttons(
+                                symbol = "log",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Log)) }
+                            )
+                            Buttons(
+                                symbol = "!",
+                                buttonType = ButtonType.FUNCTION,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                onClick = { onAction(Actions.UnaryOperation(Operations.Factorial)) }
+                            )
+                            // Empty space for alignment
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(buttonSpacing))
             Column(
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
-                ) {
-                    Buttons(
-                        symbol = "AC",
-                        buttonType = ButtonType.FUNCTION,
-                        modifier = Modifier
-                            .weight(2f)
-                            .aspectRatio(2f),
-                        onClick = { onAction(Actions.Clear) }
-                    )
-                    Buttons(
-                        symbol = "Del",
-                        buttonType = ButtonType.FUNCTION,
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f),
-                        onClick = { onAction(Actions.Delete) }
-                    )
-                    Buttons(
-                        symbol = "÷",
-                        buttonType = ButtonType.OPERATOR,
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f),
-                        onClick = { onAction(Actions.Operation(Operations.Divide)) }
-                    )
-                }
-                
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(buttonSpacing)

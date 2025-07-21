@@ -5,5 +5,6 @@ data class States (
     val number2: String = "",
     val operation: Operations? = null,
     val history: List<CalculationHistory> = emptyList(),
-    val showHistory: Boolean = false
+    val showHistory: Boolean = false,
+    val showScientific: Boolean = false
 )
