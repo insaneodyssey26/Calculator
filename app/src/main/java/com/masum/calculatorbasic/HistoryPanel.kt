@@ -32,6 +32,7 @@ fun HistoryPanel(
     isVisible: Boolean,
     onHistoryItemClick: (String) -> Unit,
     onClearHistory: () -> Unit,
+    onDeleteHistoryItem: (CalculationHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -103,7 +104,8 @@ fun HistoryPanel(
                         items(history) { item ->
                             HistoryItem(
                                 item = item,
-                                onClick = { onHistoryItemClick(item.result) }
+                                onClick = { onHistoryItemClick(item.result) },
+                                onDelete = { onDeleteHistoryItem(item) }
                             )
                         }
                     }
@@ -116,37 +118,51 @@ fun HistoryPanel(
 @Composable
 private fun HistoryItem(
     item: CalculationHistory,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+            .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = NumberButton.copy(alpha = 0.3f)
         )
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = item.expression,
-                color = DisplaySecondary,
-                fontSize = 14.sp,
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = "= ${item.result}",
-                color = DisplayText,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onClick() }
+            ) {
+                Text(
+                    text = item.expression,
+                    color = DisplaySecondary,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "= ${item.result}",
+                    color = DisplayText,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Calculation",
+                    tint = AccentRed
+                )
+            }
         }
     }
 }

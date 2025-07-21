@@ -82,6 +82,9 @@ fun CalculatorScreen(
                 },
                 onClearHistory = {
                     onAction(Actions.ClearHistory)
+                },
+                onDeleteHistoryItem = { item ->
+                    onAction(Actions.DeleteHistoryItem(item))
                 }
             )
             

@@ -26,7 +26,11 @@ class CalculatorViewModel: ViewModel() {
             Actions.Decimal -> enterDecimal()
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
             Actions.ClearHistory -> state = state.copy(history = emptyList())
-                is Actions.UnaryOperation -> performUnary(action.operation)
+            is Actions.UnaryOperation -> performUnary(action.operation)
+            is Actions.DeleteHistoryItem -> {
+                state = state.copy(history = state.history.filterNot { it == action.item })
+            }
+
             else -> {
 
             }
