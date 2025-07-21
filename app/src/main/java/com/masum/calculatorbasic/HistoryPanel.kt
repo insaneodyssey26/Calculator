@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ fun HistoryPanel(
     onHistoryItemClick: (String) -> Unit,
     onClearHistory: () -> Unit,
     onDeleteHistoryItem: (CalculationHistory) -> Unit,
+    onClose: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -67,16 +69,24 @@ fun HistoryPanel(
                         fontWeight = FontWeight.Bold,
                         color = DisplayText
                     )
-                    
-                    IconButton(
-                        onClick = onClearHistory,
-                        enabled = history.isNotEmpty()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Clear History",
-                            tint = if (history.isNotEmpty()) AccentRed else DisplaySecondary
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = onClearHistory,
+                            enabled = history.isNotEmpty()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Clear History",
+                                tint = if (history.isNotEmpty()) AccentRed else DisplaySecondary
+                            )
+                        }
+                        IconButton(onClick = onClose) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close History",
+                                tint = DisplaySecondary
+                            )
+                        }
                     }
                 }
                 
