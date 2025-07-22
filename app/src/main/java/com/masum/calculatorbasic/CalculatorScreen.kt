@@ -10,9 +10,13 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -173,18 +177,115 @@ fun CalculatorScreen(
                 }
             }
             
+            var scientificMenuExpanded by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
-                Buttons(
-                    symbol = "f(x)",
-                    buttonType = ButtonType.FUNCTION,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                    onClick = { onAction(Actions.ToggleScientific) }
-                )
+                // f(x) button with dropdown icon
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Buttons(
+                            symbol = "f(x)",
+                            buttonType = ButtonType.FUNCTION,
+                            modifier = Modifier.aspectRatio(1f),
+                            onClick = { scientificMenuExpanded = true }
+                        )
+                        IconButton(onClick = { scientificMenuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = "Show scientific operations",
+                                tint = AccentBlue
+                            )
+                        }
+                    }
+                    DropdownMenu(
+                        expanded = scientificMenuExpanded,
+                        onDismissRequest = { scientificMenuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("% (Percent)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Percent))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("± (Plus/Minus)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.PlusMinus))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("√ (Square Root)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Sqrt))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("x² (Square)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Square))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("1/x (Reciprocal)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Reciprocal))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("sin") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Sin))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("cos") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Cos))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("tan") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Tan))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("ln") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Ln))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("log") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Log))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("! (Factorial)") },
+                            onClick = {
+                                onAction(Actions.UnaryOperation(Operations.Factorial))
+                                scientificMenuExpanded = false
+                            }
+                        )
+                    }
+                }
                 Buttons(
                     symbol = "AC",
                     buttonType = ButtonType.FUNCTION,
@@ -209,143 +310,6 @@ fun CalculatorScreen(
                         .aspectRatio(1f),
                     onClick = { onAction(Actions.Operation(Operations.Divide)) }
                 )
-            }
-            
-            AnimatedVisibility(
-                visible = state.showScientific,
-                enter = expandVertically(
-                    animationSpec = tween(durationMillis = 300)
-                ),
-                exit = shrinkVertically(
-                    animationSpec = tween(durationMillis = 300)
-                )
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = DisplayBackground.copy(alpha = 0.6f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(buttonSpacing)
-                    ) {
-                        // First row: %, ±, √, x²
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
-                        ) {
-                            Buttons(
-                                symbol = "%",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Percent)) }
-                            )
-                            Buttons(
-                                symbol = "±",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.PlusMinus)) }
-                            )
-                            Buttons(
-                                symbol = "√",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Sqrt)) }
-                            )
-                            Buttons(
-                                symbol = "x²",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Square)) }
-                            )
-                        }
-                        
-                        // Second row: 1/x, sin, cos, tan
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
-                        ) {
-                            Buttons(
-                                symbol = "1/x",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Reciprocal)) }
-                            )
-                            Buttons(
-                                symbol = "sin",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Sin)) }
-                            )
-                            Buttons(
-                                symbol = "cos",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Cos)) }
-                            )
-                            Buttons(
-                                symbol = "tan",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Tan)) }
-                            )
-                        }
-                        
-                        // Third row: ln, log, !, (empty space)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
-                        ) {
-                            Buttons(
-                                symbol = "ln",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Ln)) }
-                            )
-                            Buttons(
-                                symbol = "log",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Log)) }
-                            )
-                            Buttons(
-                                symbol = "!",
-                                buttonType = ButtonType.FUNCTION,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f),
-                                onClick = { onAction(Actions.UnaryOperation(Operations.Factorial)) }
-                            )
-                            // Empty space for alignment
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
             }
             Spacer(modifier = Modifier.height(buttonSpacing))
             Column(
