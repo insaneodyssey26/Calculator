@@ -123,7 +123,9 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterNumber(number: Int) {
-        if (state.operation == null) {
+        val op = state.operation
+        val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
+        if (op == null || isUnary) {
             if (state.number1.length >= MAX_NUMBER_LENGTH) {
                 return
             }
@@ -134,7 +136,7 @@ class CalculatorViewModel: ViewModel() {
             }
             return
         }
-        
+        // Binary operation
         if (state.number2.length >= MAX_NUMBER_LENGTH) {
             return
         }
@@ -146,7 +148,9 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterDecimal() {
-        if (state.operation == null) {
+        val op = state.operation
+        val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
+        if (op == null || isUnary) {
             if (!state.number1.contains(".") && state.number1.isNotBlank()) {
                 state = state.copy(number1 = state.number1 + ".")
             } else if (state.number1.isBlank()) {
