@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
@@ -182,26 +183,23 @@ fun CalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
-                // f(x) button with dropdown icon
+                // Dropdown button for scientific operations
                 Box(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    IconButton(
+                        onClick = { scientificMenuExpanded = true },
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                            .background(FunctionButton)
                     ) {
-                        Buttons(
-                            symbol = "f(x)",
-                            buttonType = ButtonType.FUNCTION,
-                            modifier = Modifier.aspectRatio(1f),
-                            onClick = { scientificMenuExpanded = true }
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Scientific operations",
+                            tint = Color.Black,
+                            modifier = Modifier.padding(8.dp)
                         )
-                        IconButton(onClick = { scientificMenuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
-                                contentDescription = "Show scientific operations",
-                                tint = AccentBlue
-                            )
-                        }
                     }
                     DropdownMenu(
                         expanded = scientificMenuExpanded,
