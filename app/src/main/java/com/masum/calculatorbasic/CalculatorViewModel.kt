@@ -26,6 +26,13 @@ class CalculatorViewModel: ViewModel() {
         when(action) {
             is Actions.Number -> enterNumber(action.number)
             is Actions.Operation -> enterOperation(action.operation)
+            is Actions.UnaryOperation -> {
+                state = state.copy(
+                    operation = action.operation,
+                    number1 = "",
+                    number2 = ""
+                )
+            }
             Actions.Clear -> state = States(history = state.history)
             Actions.Calculate -> calculateResult()
             Actions.Delete -> performDelete()
@@ -33,7 +40,6 @@ class CalculatorViewModel: ViewModel() {
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
             Actions.ClearHistory -> state = state.copy(history = emptyList())
             Actions.ToggleScientific -> state = state.copy(showScientific = !state.showScientific)
-            is Actions.UnaryOperation -> performUnary(action.operation)
             is Actions.DeleteHistoryItem -> {
                 state = state.copy(history = state.history.filterNot { it == action.item })
             }
@@ -47,30 +53,43 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun calculateResult() {
+        val op = state.operation
         val number1 = state.number1.toDoubleOrNull()
         val number2 = state.number2.toDoubleOrNull()
-        
-        if (number1 != null && number2 != null) {
-            val result = when(state.operation) {
-                is Operations.Add -> number1 + number2
-                is Operations.Subtract -> number1 - number2
-                is Operations.Multiply -> number1 * number2
-                is Operations.Divide -> {
-                    if (number2 != 0.0) number1 / number2 else TODO()
+        var result: Double? = null
+        var expression = ""
+        if (op != null) {
+            when (op) {
+                is Operations.Add, is Operations.Subtract, is Operations.Multiply, is Operations.Divide -> {
+                    if (number1 != null && number2 != null) {
+                        result = when (op) {
+                            is Operations.Add -> number1 + number2
+                            is Operations.Subtract -> number1 - number2
+                            is Operations.Multiply -> number1 * number2
+                            is Operations.Divide -> if (number2 != 0.0) number1 / number2 else null
+                            else -> null
+                        }
+                        expression = "${state.number1} ${op.symbol} ${state.number2}"
+                    }
                 }
-                else -> return
+                is Operations.Percent, is Operations.PlusMinus, is Operations.Sqrt, is Operations.Square, is Operations.Reciprocal,
+                is Operations.Sin, is Operations.Cos, is Operations.Tan, is Operations.Ln, is Operations.Log, is Operations.Factorial -> {
+                    if (number1 != null) {
+                        result = performUnaryForResult(op, number1)
+                        expression = "${op.symbol}(${state.number1})"
+                    }
+                }
+                else -> {}
             }
-            
+        }
+        if (result != null) {
             val formattedResult = if (abs(result) >= 1e9 || (abs(result) < 1e-5 && result != 0.0)) {
                 String.format("%.3e", result)
             } else {
                 formatter.format(result)
             }.take(MAX_DISPLAY_LENGTH)
-            
-            val expression = "${state.number1} ${state.operation?.symbol} ${state.number2}"
             val historyEntry = CalculationHistory(expression, formattedResult)
             val newHistory = (listOf(historyEntry) + state.history).take(MAX_HISTORY_SIZE)
-            
             state = state.copy(
                 number1 = formattedResult,
                 number2 = "",
@@ -147,11 +166,9 @@ class CalculatorViewModel: ViewModel() {
         private const val MAX_HISTORY_SIZE = 20
     }
     
-    // Handle unary operations like percent, sqrt, square, reciprocal, plus/minus
-    private fun performUnary(op: Operations) {
-        val targetText = if (state.operation == null) state.number1 else state.number2
-        val value = targetText.toDoubleOrNull() ?: return
-        val result = when(op) {
+    // Used for calculation only, not for immediate apply
+    private fun performUnaryForResult(op: Operations, value: Double): Double {
+        return when(op) {
             is Operations.Percent -> value / 100
             is Operations.PlusMinus -> -value
             is Operations.Sqrt -> if (value >= 0) sqrt(value) else value
@@ -167,13 +184,7 @@ class CalculatorViewModel: ViewModel() {
                     factorial(value.toInt()).toDouble()
                 } else value
             }
-            else -> return
-        }
-        val formatted = formatter.format(result).take(MAX_DISPLAY_LENGTH)
-        state = if (state.operation == null) {
-            state.copy(number1 = formatted)
-        } else {
-            state.copy(number2 = formatted)
+            else -> value
         }
     }
     
