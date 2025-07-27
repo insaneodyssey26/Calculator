@@ -499,8 +499,8 @@ fun CalculatorScreen(
                         symbol = "0",
                         buttonType = ButtonType.NUMBER,
                         modifier = Modifier
-                            .weight(2f)
-                            .aspectRatio(2f),
+                            .weight(1f)
+                            .aspectRatio(1f),
                         onClick = { onAction(Actions.Number(0)) }
                     )
                     Buttons(
@@ -510,6 +510,14 @@ fun CalculatorScreen(
                             .weight(1f)
                             .aspectRatio(1f),
                         onClick = { onAction(Actions.Decimal) }
+                    )
+                    Buttons(
+                        symbol = "⌫",
+                        buttonType = ButtonType.FUNCTION,
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f),
+                        onClick = { onAction(Actions.Delete) }
                     )
                     Buttons(
                         symbol = "=",

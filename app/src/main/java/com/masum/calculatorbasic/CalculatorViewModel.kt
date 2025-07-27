@@ -139,6 +139,20 @@ class CalculatorViewModel: ViewModel() {
 
     private fun performDelete() {
         when {
+            state.expression.isNotEmpty() -> {
+                val newExpression = state.expression.dropLast(1)
+                val newOpenCount = if (state.expression.endsWith(")")) {
+                    state.openParenthesesCount + 1
+                } else if (state.expression.endsWith("(")) {
+                    maxOf(0, state.openParenthesesCount - 1)
+                } else {
+                    state.openParenthesesCount
+                }
+                state = state.copy(
+                    expression = newExpression,
+                    openParenthesesCount = newOpenCount
+                )
+            }
             state.number2.isNotBlank() -> state = state.copy(
                 number2 = state.number2.dropLast(1)
             )
@@ -217,7 +231,6 @@ class CalculatorViewModel: ViewModel() {
         private const val MAX_HISTORY_SIZE = 20
     }
     
-    // Used for calculation only, not for immediate apply
     private fun performUnaryForResult(op: Operations, value: Double): Double {
         return when(op) {
             is Operations.Percent -> value / 100
