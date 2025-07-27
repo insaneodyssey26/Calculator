@@ -46,6 +46,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -59,14 +61,20 @@ import com.masum.calculatorbasic.ui.theme.*
 @Composable
 fun CalculatorScreen(
     state: States,
-    buttonSpacing: Dp = 12.dp,
+    buttonSpacing: Dp = 16.dp,
     modifier: Modifier = Modifier,
     onAction: (Actions) -> Unit
 ) {
     val resultScale by animateFloatAsState(
-        targetValue = if (state.number1.isNotEmpty() || state.number2.isNotEmpty()) 1.0f else 0.95f,
-        animationSpec = tween(durationMillis = 200),
+        targetValue = if (state.number1.isNotEmpty() || state.number2.isNotEmpty()) 1.0f else 0.98f,
+        animationSpec = tween(durationMillis = 300),
         label = "result_scale"
+    )
+    
+    val displayAlpha by animateFloatAsState(
+        targetValue = if (state.number1.isNotEmpty() || state.number2.isNotEmpty()) 1.0f else 0.7f,
+        animationSpec = tween(durationMillis = 200),
+        label = "display_alpha"
     )
     
     Box(
@@ -75,15 +83,18 @@ fun CalculatorScreen(
                 Brush.verticalGradient(
                     colors = listOf(
                         DarkBackground,
-                        MediumGray
-                    )
+                        MediumGray,
+                        DarkBackground.copy(alpha = 0.95f)
+                    ),
+                    startY = 0f,
+                    endY = 2000f
                 )
             )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(buttonSpacing)
         ) {
             HistoryPanel(
@@ -106,17 +117,18 @@ fun CalculatorScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(20.dp),
+                    .weight(1f)
+                    .scale(resultScale),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = DisplayBackground.copy(alpha = 0.8f)
+                    containerColor = DisplayBackground.copy(alpha = 0.9f)
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(20.dp),
+                        .padding(24.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(
@@ -124,19 +136,26 @@ fun CalculatorScreen(
                         horizontalArrangement = Arrangement.Start
                     ) {
                         IconButton(
-                            onClick = { onAction(Actions.ToggleHistory) }
+                            onClick = { onAction(Actions.ToggleHistory) },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(
+                                    if (state.history.isNotEmpty()) AccentBlue.copy(alpha = 0.1f)
+                                    else Color.Transparent
+                                )
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.History,
                                 contentDescription = "History",
-                                tint = if (state.history.isNotEmpty()) AccentBlue else DisplaySecondary
+                                tint = if (state.history.isNotEmpty()) AccentBlue else OnSurfaceVariant
                             )
                         }
                     }
                     
                     Column(
                         verticalArrangement = Arrangement.Bottom,
-                        horizontalAlignment = Alignment.End
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.alpha(displayAlpha)
                     ) {
                         val expression = buildString {
                             val op = state.operation
@@ -155,12 +174,14 @@ fun CalculatorScreen(
                         if (expression.isNotBlank()) {
                             Text(
                                 text = expression,
-                                fontSize = 20.sp,
+                                fontSize = 18.sp,
                                 color = DisplaySecondary,
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.fillMaxWidth(),
-                                maxLines = 1
+                                maxLines = 1,
+                                fontWeight = FontWeight.Normal
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
                         val mainDisplay = when {
                             state.number2.isNotEmpty() -> state.number2
@@ -168,11 +189,13 @@ fun CalculatorScreen(
                         }
                         Crossfade(
                             targetState = mainDisplay,
+                            animationSpec = tween(durationMillis = 200),
                             label = "calculator_display"
                         ) { displayText ->
                             Text(
                                 text = if (displayText.isEmpty()) "0" else displayText,
                                 fontSize = when {
+                                    displayText.length > 10 -> 42.sp
                                     displayText.length > 8 -> 48.sp
                                     displayText.length > 6 -> 56.sp
                                     else -> 64.sp
@@ -181,7 +204,8 @@ fun CalculatorScreen(
                                 color = DisplayText,
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.fillMaxWidth(),
-                                maxLines = 2
+                                maxLines = 2,
+                                lineHeight = 72.sp
                             )
                         }
                     }
@@ -193,7 +217,6 @@ fun CalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
-                // Dropdown button for scientific operations
                 Box(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -202,18 +225,29 @@ fun CalculatorScreen(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(CircleShape)
-                            .background(FunctionButton)
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        FunctionButton,
+                                        FunctionButton.copy(alpha = 0.8f)
+                                    )
+                                )
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
                             contentDescription = "Scientific operations",
-                            tint = Color.Black,
-                            modifier = Modifier.padding(8.dp)
+                            tint = Color.White,
+                            modifier = Modifier.padding(4.dp)
                         )
                     }
                     DropdownMenu(
                         expanded = scientificMenuExpanded,
                         onDismissRequest = { scientificMenuExpanded = false },
+                        modifier = Modifier.background(
+                            SurfaceElevated,
+                            RoundedCornerShape(12.dp)
+                        )
                     ) {
                         DropdownMenuItem(
                             text = { Text("% (Percent)") },
@@ -319,9 +353,10 @@ fun CalculatorScreen(
                     onClick = { onAction(Actions.Operation(Operations.Divide)) }
                 )
             }
-            Spacer(modifier = Modifier.height(buttonSpacing))
+            Spacer(modifier = Modifier.height(buttonSpacing / 2))
             Column(
-                verticalArrangement = Arrangement.spacedBy(buttonSpacing)
+                verticalArrangement = Arrangement.spacedBy(buttonSpacing),
+                modifier = Modifier.padding(horizontal = 4.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
