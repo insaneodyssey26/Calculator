@@ -139,8 +139,18 @@ fun CalculatorScreen(
                         horizontalAlignment = Alignment.End
                     ) {
                         val expression = buildString {
-                            append(state.number1)
-                            if (state.operation != null) append(" ${state.operation.symbol}")
+                            val op = state.operation
+                            val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
+                            if (op != null && isUnary) {
+                                if (state.number1.isNotBlank()) {
+                                    append("${op.symbol}(${state.number1})")
+                                } else {
+                                    append("${op.symbol}(")
+                                }
+                            } else {
+                                append(state.number1)
+                                if (op != null) append(" ${op.symbol}")
+                            }
                         }
                         if (expression.isNotBlank()) {
                             Text(
