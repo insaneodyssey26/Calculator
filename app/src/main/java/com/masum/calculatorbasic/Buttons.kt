@@ -99,7 +99,7 @@ fun Buttons(
                 interactionSource = interactionSource,
                 indication = null
             ) {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onClick()
             }
             .then(modifier)
