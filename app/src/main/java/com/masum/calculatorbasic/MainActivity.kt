@@ -19,7 +19,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CalculatorBasicTheme {
-                val viewModel = viewModel<CalculatorViewModel>()
+                val historyDataStore = HistoryDataStore(this@MainActivity)
+                val viewModelFactory = CalculatorViewModelFactory(historyDataStore)
+                val viewModel = viewModel<CalculatorViewModel>(factory = viewModelFactory)
                 val state = viewModel.state
                 val buttonSpacing = 12.dp
                 CalculatorScreen(

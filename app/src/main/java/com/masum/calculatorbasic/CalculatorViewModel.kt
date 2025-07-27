@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -14,12 +16,32 @@ import kotlin.math.ln
 import kotlin.math.log10
 import kotlin.math.pow
 
-class CalculatorViewModel: ViewModel() {
+class CalculatorViewModel(
+    private val historyDataStore: HistoryDataStore
+): ViewModel() {
     var state by mutableStateOf(States())
         private set
 
     private val formatter = DecimalFormat("#.#########").apply {
         isGroupingUsed = false
+    }
+    
+    init {
+        loadHistory()
+    }
+    
+    private fun loadHistory() {
+        viewModelScope.launch {
+            historyDataStore.historyFlow.collect { history ->
+                state = state.copy(history = history)
+            }
+        }
+    }
+    
+    private fun saveHistory() {
+        viewModelScope.launch {
+            historyDataStore.saveHistory(state.history)
+        }
     }
 
     fun onAction(action: Actions) {
@@ -38,7 +60,12 @@ class CalculatorViewModel: ViewModel() {
             Actions.Delete -> performDelete()
             Actions.Decimal -> enterDecimal()
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
-            Actions.ClearHistory -> state = state.copy(history = emptyList())
+            Actions.ClearHistory -> {
+                state = state.copy(history = emptyList())
+                viewModelScope.launch {
+                    historyDataStore.clearHistory()
+                }
+            }
             Actions.ToggleScientific -> state = state.copy(showScientific = !state.showScientific)
             Actions.OpenParenthesis -> {
                 state = state.copy(
@@ -56,12 +83,14 @@ class CalculatorViewModel: ViewModel() {
             }
             is Actions.DeleteHistoryItem -> {
                 state = state.copy(history = state.history.filterNot { it == action.item })
+                saveHistory()
             }
             is Actions.RestoreHistoryItem -> {
                 val current = state.history.toMutableList()
                 val idx = action.index.coerceIn(0, current.size)
                 current.add(idx, action.item)
                 state = state.copy(history = current)
+                saveHistory()
             }
             is Actions.UseHistoryResult -> {
                 state = state.copy(
@@ -91,6 +120,7 @@ class CalculatorViewModel: ViewModel() {
                     openParenthesesCount = 0,
                     history = newHistory
                 )
+                saveHistory()
             } catch (e: Exception) {
                 state = state.copy(
                     number1 = "Error",
@@ -144,6 +174,7 @@ class CalculatorViewModel: ViewModel() {
                 operation = null,
                 history = newHistory
             )
+            saveHistory()
         }
     }
 

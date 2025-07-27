@@ -145,7 +145,7 @@ fun HistoryPanel(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "💡 Swipe right on any calculation to delete it",
+                                text = "Swipe right on any calculation to delete it",
                                 color = DisplayText,
                                 fontSize = 14.sp,
                                 modifier = Modifier.weight(1f)
