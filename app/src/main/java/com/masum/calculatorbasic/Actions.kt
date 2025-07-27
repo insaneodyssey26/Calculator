@@ -15,4 +15,5 @@ sealed class Actions {
     object ToggleScientific: Actions()
     object OpenParenthesis: Actions()
     object CloseParenthesis: Actions()
+    data class RestoreHistoryItem(val item: CalculationHistory, val index: Int): Actions()
 }

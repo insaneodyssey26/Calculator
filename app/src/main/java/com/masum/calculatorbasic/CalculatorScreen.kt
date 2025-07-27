@@ -109,6 +109,9 @@ fun CalculatorScreen(
                 onDeleteHistoryItem = { item ->
                     onAction(Actions.DeleteHistoryItem(item))
                 },
+                onRestoreHistoryItem = { item, index ->
+                    onAction(Actions.RestoreHistoryItem(item, index))
+                },
                 onClose = {
                     onAction(Actions.ToggleHistory)
                 }

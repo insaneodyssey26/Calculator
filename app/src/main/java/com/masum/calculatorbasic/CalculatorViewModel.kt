@@ -63,6 +63,10 @@ class CalculatorViewModel: ViewModel() {
                     showHistory = false
                 )
             }
+
+            else -> {
+
+            }
         }
     }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,9 +42,14 @@ fun HistoryPanel(
     onHistoryItemClick: (String) -> Unit,
     onClearHistory: () -> Unit,
     onDeleteHistoryItem: (CalculationHistory) -> Unit,
+    onRestoreHistoryItem: (CalculationHistory, Int) -> Unit,
     onClose: () -> Unit = {}
 ) {
     var showSwipeAlert by remember { mutableStateOf(true) }
+    var lastDeleted by remember { mutableStateOf<CalculationHistory?>(null) }
+    var lastDeletedIndex by remember { mutableStateOf(-1) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(isVisible) {
         if (isVisible && history.isNotEmpty() && showSwipeAlert) {
@@ -51,7 +57,8 @@ fun HistoryPanel(
         }
     }
 
-    AnimatedVisibility(
+    Box {
+        AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically { -it },
         exit = slideOutVertically { -it },
@@ -172,13 +179,34 @@ fun HistoryPanel(
                             SwipeToDeleteHistoryItem(
                                 item = item,
                                 onClick = { onHistoryItemClick(item.result) },
-                                onDelete = { onDeleteHistoryItem(item) }
+                                onDelete = {
+                                    lastDeleted = item
+                                    lastDeletedIndex = history.indexOf(item)
+                                    onDeleteHistoryItem(item)
+                                    scope.launch{
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed && lastDeleted != null && lastDeletedIndex >= 0) {
+                                            onRestoreHistoryItem(lastDeleted!!, lastDeletedIndex)
+                                            lastDeleted = null
+                                            lastDeletedIndex = -1
+                                        }
+                                    }
+                                }
                             )
                         }
                     }
                 }
             }
         }
+        }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
