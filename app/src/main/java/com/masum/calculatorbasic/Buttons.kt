@@ -1,19 +1,23 @@
 package com.masum.calculatorbasic
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.indication
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -60,6 +64,22 @@ fun Buttons(
         label = "button_elevation"
     )
     
+    val flashColor by animateColorAsState(
+        targetValue = if (isPressed) Color.White.copy(alpha = 0.18f) else Color.Transparent,
+        animationSpec = tween(durationMillis = 80), label = "flash_color"
+    )
+    val popScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.86f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMedium
+        ), label = "pop_scale"
+    )
+    val popElevation by animateDpAsState(
+        targetValue = if (isPressed) 0.dp else 12.dp,
+        animationSpec = tween(durationMillis = 120), label = "pop_elevation"
+    )
+    
     val (backgroundColor, textColor, pressedColor) = when (buttonType) {
         ButtonType.OPERATOR -> {
             Triple(Orange, Color.White, OrangePressed)
@@ -72,20 +92,22 @@ fun Buttons(
         }
     }
     
-    val currentBackgroundColor by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 100),
+    val currentBackgroundColor by animateColorAsState(
+        targetValue = if (isPressed) pressedColor else backgroundColor,
         label = "background_color"
     )
     
-    val finalBackgroundColor = if (currentBackgroundColor > 0.5f) pressedColor else backgroundColor
+    val finalBackgroundColor by animateColorAsState(
+        targetValue = if (isPressed) pressedColor.copy(alpha = 0.8f) else backgroundColor,
+        label = "final_background_color"
+    )
     
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .scale(scale)
+            .scale(popScale)
             .shadow(
-                elevation = elevation,
+                elevation = popElevation,
                 shape = CircleShape,
                 ambientColor = when (buttonType) {
                     ButtonType.OPERATOR -> OrangeGlow
@@ -95,6 +117,7 @@ fun Buttons(
             )
             .clip(CircleShape)
             .background(finalBackgroundColor)
+            .background(flashColor)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
