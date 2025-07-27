@@ -23,7 +23,7 @@ class CalculatorViewModel: ViewModel() {
     }
 
     fun onAction(action: Actions) {
-        when(action) {
+    when(action) {
             is Actions.Number -> enterNumber(action.number)
             is Actions.Operation -> enterOperation(action.operation)
             is Actions.UnaryOperation -> {
@@ -56,6 +56,12 @@ class CalculatorViewModel: ViewModel() {
             }
             is Actions.DeleteHistoryItem -> {
                 state = state.copy(history = state.history.filterNot { it == action.item })
+            }
+            is Actions.RestoreHistoryItem -> {
+                val current = state.history.toMutableList()
+                val idx = action.index.coerceIn(0, current.size)
+                current.add(idx, action.item)
+                state = state.copy(history = current)
             }
             is Actions.UseHistoryResult -> {
                 state = state.copy(
