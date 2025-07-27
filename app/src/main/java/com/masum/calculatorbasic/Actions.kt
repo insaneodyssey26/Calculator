@@ -16,4 +16,5 @@ sealed class Actions {
     object OpenParenthesis: Actions()
     object CloseParenthesis: Actions()
     data class RestoreHistoryItem(val item: CalculationHistory, val index: Int): Actions()
+    data class CopyToDashboard(val value: String): Actions()
 }

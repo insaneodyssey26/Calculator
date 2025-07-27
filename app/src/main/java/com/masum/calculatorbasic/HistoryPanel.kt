@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,8 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +59,8 @@ fun HistoryPanel(
     var lastDeletedIndex by remember { mutableStateOf(-1) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val hapticFeedback = LocalHapticFeedback.current
 
     LaunchedEffect(isVisible) {
         if (isVisible && history.isNotEmpty() && showSwipeAlert) {
@@ -198,6 +206,9 @@ fun HistoryPanel(
                                             lastDeletedIndex = -1
                                         }
                                     }
+                                },
+                                onLongPress = { value ->
+                                    onHistoryItemClick(value)
                                 }
                             )
                         }
@@ -269,11 +280,13 @@ private fun HistoryItem(
 private fun SwipeToDeleteHistoryItem(
     item: CalculationHistory,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onLongPress: (String) -> Unit
 ) {
     val density = LocalDensity.current
     var offsetX by remember { mutableStateOf(0f) }
     val swipeThreshold = with(density) { 100.dp.toPx() }
+    val haptic = LocalHapticFeedback.current
 
     val animatedOffsetX by animateFloatAsState(
         targetValue = offsetX,
@@ -289,6 +302,39 @@ private fun SwipeToDeleteHistoryItem(
         targetValue = if (offsetX > swipeThreshold / 2) 1f else 0f,
         label = "icon_alpha"
     )
+
+    var showCopyDialog by remember { mutableStateOf(false) }
+    val clipboardManager = LocalClipboardManager.current
+    var showCopySnackbar by remember { mutableStateOf(false) }
+    var copiedText by remember { mutableStateOf("") }
+
+    if (showCopyDialog) {
+        AlertDialog(
+            onDismissRequest = { showCopyDialog = false },
+            title = { Text("Copy to Clipboard") },
+            text = {
+                Column {
+                    Text("What do you want to copy?")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    clipboardManager.setText(AnnotatedString(item.result))
+                    copiedText = item.result
+                    showCopySnackbar = true
+                    showCopyDialog = false
+                }) { Text("Result") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    clipboardManager.setText(AnnotatedString(item.expression))
+                    copiedText = item.expression
+                    showCopySnackbar = true
+                    showCopyDialog = false
+                }) { Text("Expression") }
+            }
+        )
+    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -337,6 +383,15 @@ private fun SwipeToDeleteHistoryItem(
                         val newOffset = offsetX + dragAmount
                         offsetX = if (newOffset > 0) newOffset else 0f
                     }
+                }
+                .pointerInput(item) {
+                    detectTapGestures(
+                        onLongPress = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showCopyDialog = true
+                        },
+                        onTap = { onClick() }
+                    )
                 },
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
@@ -346,7 +401,6 @@ private fun SwipeToDeleteHistoryItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick() }
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -384,13 +438,28 @@ private fun SwipeToDeleteHistoryItem(
             }
         }
     }
+
+    if (showCopySnackbar) {
+        LaunchedEffect(showCopySnackbar) {
+            delay(1200)
+            showCopySnackbar = false
+        }
+        Box(modifier = Modifier.fillMaxSize()) {
+            Snackbar(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                action = {},
+                content = { Text("Copied to clipboard") }
+            )
+        }
+    }
 }
 
 @Composable
 private fun AnimatedSwipeToDeleteHistoryItem(
     item: CalculationHistory,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onLongPress: (String) -> Unit
 ) {
     var isDeleting by remember { mutableStateOf(false) }
     
@@ -411,7 +480,8 @@ private fun AnimatedSwipeToDeleteHistoryItem(
         SwipeToDeleteHistoryItem(
             item = item,
             onClick = onClick,
-            onDelete = { isDeleting = true }
+            onDelete = { isDeleting = true },
+            onLongPress = onLongPress
         )
     }
 }

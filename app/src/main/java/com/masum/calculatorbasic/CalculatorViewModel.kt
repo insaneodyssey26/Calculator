@@ -98,6 +98,9 @@ class CalculatorViewModel(
                     showHistory = false
                 )
             }
+            is Actions.CopyToDashboard -> {
+                state = state.copy(number1 = action.value, number2 = "", operation = null, expression = "")
+            }
 
             else -> {
 
