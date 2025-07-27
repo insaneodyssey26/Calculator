@@ -13,4 +13,6 @@ sealed class Actions {
     object ClearHistory: Actions()
     data class UseHistoryResult(val result: String): Actions()
     object ToggleScientific: Actions()
+    object OpenParenthesis: Actions()
+    object CloseParenthesis: Actions()
 }

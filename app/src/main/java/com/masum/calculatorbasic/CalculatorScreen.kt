@@ -158,17 +158,21 @@ fun CalculatorScreen(
                         modifier = Modifier.alpha(displayAlpha)
                     ) {
                         val expression = buildString {
-                            val op = state.operation
-                            val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
-                            if (op != null && isUnary) {
-                                if (state.number1.isNotBlank()) {
-                                    append("${op.symbol}(${state.number1})")
-                                } else {
-                                    append("${op.symbol}(")
-                                }
+                            if (state.expression.isNotEmpty()) {
+                                append(state.expression)
                             } else {
-                                append(state.number1)
-                                if (op != null) append(" ${op.symbol}")
+                                val op = state.operation
+                                val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
+                                if (op != null && isUnary) {
+                                    if (state.number1.isNotBlank()) {
+                                        append("${op.symbol}(${state.number1})")
+                                    } else {
+                                        append("${op.symbol}(")
+                                    }
+                                } else {
+                                    append(state.number1)
+                                    if (op != null) append(" ${op.symbol}")
+                                }
                             }
                         }
                         if (expression.isNotBlank()) {
@@ -184,6 +188,7 @@ fun CalculatorScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                         }
                         val mainDisplay = when {
+                            state.expression.isNotEmpty() && state.number1.isEmpty() -> "0"
                             state.number2.isNotEmpty() -> state.number2
                             else -> state.number1
                         }
@@ -329,11 +334,25 @@ fun CalculatorScreen(
                     }
                 }
                 Buttons(
+                    symbol = "()",
+                    buttonType = ButtonType.FUNCTION,
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = { 
+                        if (state.openParenthesesCount > 0) {
+                            onAction(Actions.CloseParenthesis)
+                        } else {
+                            onAction(Actions.OpenParenthesis)
+                        }
+                    }
+                )
+                Buttons(
                     symbol = "AC",
                     buttonType = ButtonType.FUNCTION,
                     modifier = Modifier
-                        .weight(1.5f)
-                        .aspectRatio(1.5f),
+                        .weight(1f)
+                        .aspectRatio(1f),
                     onClick = { onAction(Actions.Clear) }
                 )
                 Buttons(

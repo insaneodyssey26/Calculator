@@ -40,6 +40,20 @@ class CalculatorViewModel: ViewModel() {
             Actions.ToggleHistory -> state = state.copy(showHistory = !state.showHistory)
             Actions.ClearHistory -> state = state.copy(history = emptyList())
             Actions.ToggleScientific -> state = state.copy(showScientific = !state.showScientific)
+            Actions.OpenParenthesis -> {
+                state = state.copy(
+                    expression = state.expression + "(",
+                    openParenthesesCount = state.openParenthesesCount + 1
+                )
+            }
+            Actions.CloseParenthesis -> {
+                if (state.openParenthesesCount > 0) {
+                    state = state.copy(
+                        expression = state.expression + ")",
+                        openParenthesesCount = state.openParenthesesCount - 1
+                    )
+                }
+            }
             is Actions.DeleteHistoryItem -> {
                 state = state.copy(history = state.history.filterNot { it == action.item })
             }
@@ -53,6 +67,30 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun calculateResult() {
+        if (state.expression.isNotEmpty()) {
+            try {
+                val result = evaluateExpression(state.expression)
+                val formattedResult = formatter.format(result).take(MAX_DISPLAY_LENGTH)
+                val historyEntry = CalculationHistory(state.expression, formattedResult)
+                val newHistory = (listOf(historyEntry) + state.history).take(MAX_HISTORY_SIZE)
+                state = state.copy(
+                    number1 = formattedResult,
+                    number2 = "",
+                    operation = null,
+                    expression = "",
+                    openParenthesesCount = 0,
+                    history = newHistory
+                )
+            } catch (e: Exception) {
+                state = state.copy(
+                    number1 = "Error",
+                    expression = "",
+                    openParenthesesCount = 0
+                )
+            }
+            return
+        }
+        
         val op = state.operation
         val number1 = state.number1.toDoubleOrNull()
         val number2 = state.number2.toDoubleOrNull()
@@ -114,6 +152,11 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterOperation(operation: Operations) {
+        if (state.expression.isNotEmpty()) {
+            state = state.copy(expression = state.expression + " ${operation.symbol} ")
+            return
+        }
+        
         if (state.number1.isNotBlank()) {
             if (state.number2.isNotBlank()) {
                 calculateResult()
@@ -123,6 +166,11 @@ class CalculatorViewModel: ViewModel() {
     }
 
     private fun enterNumber(number: Int) {
+        if (state.expression.isNotEmpty()) {
+            state = state.copy(expression = state.expression + number.toString())
+            return
+        }
+        
         val op = state.operation
         val isUnary = op is Operations.Percent || op is Operations.PlusMinus || op is Operations.Sqrt || op is Operations.Square || op is Operations.Reciprocal || op is Operations.Sin || op is Operations.Cos || op is Operations.Tan || op is Operations.Ln || op is Operations.Log || op is Operations.Factorial
         if (op == null || isUnary) {
@@ -136,7 +184,6 @@ class CalculatorViewModel: ViewModel() {
             }
             return
         }
-        // Binary operation
         if (state.number2.length >= MAX_NUMBER_LENGTH) {
             return
         }
@@ -198,5 +245,91 @@ class CalculatorViewModel: ViewModel() {
             result *= i
         }
         return result
+    }
+    
+    private fun evaluateExpression(expression: String): Double {
+        return try {
+            val cleanExpression = expression.replace("×", "*").replace("÷", "/").replace("−", "-")
+            evaluateBasicExpression(cleanExpression)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Cannot evaluate expression")
+        }
+    }
+    
+    private fun evaluateBasicExpression(expr: String): Double {
+        val tokens = tokenize(expr.replace(" ", ""))
+        return evaluateTokens(tokens)
+    }
+    
+    private fun tokenize(expr: String): List<String> {
+        val tokens = mutableListOf<String>()
+        var current = ""
+        
+        for (char in expr) {
+            when (char) {
+                in "0123456789", '.' -> current += char
+                in "+-*/()" -> {
+                    if (current.isNotEmpty()) {
+                        tokens.add(current)
+                        current = ""
+                    }
+                    tokens.add(char.toString())
+                }
+            }
+        }
+        if (current.isNotEmpty()) tokens.add(current)
+        return tokens
+    }
+    
+    private fun evaluateTokens(tokens: List<String>): Double {
+        if (tokens.size == 1) return tokens[0].toDouble()
+        
+        var result = 0.0
+        var operation = "+"
+        var i = 0
+        
+        while (i < tokens.size) {
+            when (val token = tokens[i]) {
+                "(" -> {
+                    val endIndex = findMatchingParen(tokens, i)
+                    val subTokens = tokens.subList(i + 1, endIndex)
+                    val subResult = evaluateTokens(subTokens)
+                    result = applyOperation(result, operation, subResult)
+                    i = endIndex + 1
+                }
+                in listOf("+", "-", "*", "/") -> {
+                    operation = token
+                    i++
+                }
+                else -> {
+                    val value = token.toDouble()
+                    result = applyOperation(result, operation, value)
+                    i++
+                }
+            }
+        }
+        return result
+    }
+    
+    private fun findMatchingParen(tokens: List<String>, startIndex: Int): Int {
+        var count = 1
+        for (i in startIndex + 1 until tokens.size) {
+            when (tokens[i]) {
+                "(" -> count++
+                ")" -> count--
+            }
+            if (count == 0) return i
+        }
+        throw IllegalArgumentException("Mismatched parentheses")
+    }
+    
+    private fun applyOperation(left: Double, operation: String, right: Double): Double {
+        return when (operation) {
+            "+" -> left + right
+            "-" -> left - right
+            "*" -> left * right
+            "/" -> if (right != 0.0) left / right else throw ArithmeticException("Division by zero")
+            else -> right
+        }
     }
 }

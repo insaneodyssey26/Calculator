@@ -17,4 +17,6 @@ sealed class Operations (val symbol: String){
     object Log: Operations("log")
     object Factorial: Operations("!")
     object Power: Operations("^")
+    object OpenParenthesis: Operations("(")
+    object CloseParenthesis: Operations(")")
 }
