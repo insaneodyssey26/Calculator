@@ -184,7 +184,7 @@ class CalculatorViewModel: ViewModel() {
             is Operations.Ln -> if (value > 0) ln(value) else value
             is Operations.Log -> if (value > 0) log10(value) else value
             is Operations.Factorial -> {
-                if (value >= 0 && value <= 20 && value == value.toInt().toDouble()) {
+                if (value >= 0 && value <= 170 && value == value.toInt().toDouble()) {
                     factorial(value.toInt()).toDouble()
                 } else value
             }
@@ -192,7 +192,11 @@ class CalculatorViewModel: ViewModel() {
         }
     }
     
-    private fun factorial(n: Int): Long {
-        return if (n <= 1) 1 else n * factorial(n - 1)
+    private fun factorial(n: Int): Double {
+        var result = 1.0
+        for (i in 2..n) {
+            result *= i
+        }
+        return result
     }
 }
