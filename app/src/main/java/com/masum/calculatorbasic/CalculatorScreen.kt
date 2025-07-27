@@ -56,6 +56,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.*
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -228,8 +230,12 @@ fun CalculatorScreen(
                 Box(
                     modifier = Modifier.weight(1f)
                 ) {
+                    val haptic = LocalHapticFeedback.current
                     IconButton(
-                        onClick = { scientificMenuExpanded = true },
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scientificMenuExpanded = true
+                        },
                         modifier = Modifier
                             .aspectRatio(1f)
                             .clip(CircleShape)
@@ -260,6 +266,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("% (Percent)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Percent))
                                 scientificMenuExpanded = false
                             }
@@ -267,6 +274,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("± (Plus/Minus)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.PlusMinus))
                                 scientificMenuExpanded = false
                             }
@@ -274,6 +282,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("√ (Square Root)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Sqrt))
                                 scientificMenuExpanded = false
                             }
@@ -281,6 +290,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("x² (Square)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Square))
                                 scientificMenuExpanded = false
                             }
@@ -288,6 +298,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("1/x (Reciprocal)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Reciprocal))
                                 scientificMenuExpanded = false
                             }
@@ -295,6 +306,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("sin") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Sin))
                                 scientificMenuExpanded = false
                             }
@@ -302,6 +314,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("cos") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Cos))
                                 scientificMenuExpanded = false
                             }
@@ -309,6 +322,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("tan") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Tan))
                                 scientificMenuExpanded = false
                             }
@@ -316,6 +330,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("ln") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Ln))
                                 scientificMenuExpanded = false
                             }
@@ -323,6 +338,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("log") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Log))
                                 scientificMenuExpanded = false
                             }
@@ -330,6 +346,7 @@ fun CalculatorScreen(
                         DropdownMenuItem(
                             text = { Text("! (Factorial)") },
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Factorial))
                                 scientificMenuExpanded = false
                             }
