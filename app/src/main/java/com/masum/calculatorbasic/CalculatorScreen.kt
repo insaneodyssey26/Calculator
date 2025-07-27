@@ -4,12 +4,16 @@ package com.masum.calculatorbasic
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,6 +45,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Alignment
@@ -58,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import com.masum.calculatorbasic.ui.theme.*
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -263,88 +271,88 @@ fun CalculatorScreen(
                             RoundedCornerShape(12.dp)
                         )
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("% (Percent)") },
+                        AnimatedDropdownItem(
+                            text = "% (Percent)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Percent))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("± (Plus/Minus)") },
+                        AnimatedDropdownItem(
+                            text = "± (Plus/Minus)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.PlusMinus))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("√ (Square Root)") },
+                        AnimatedDropdownItem(
+                            text = "√ (Square Root)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Sqrt))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("x² (Square)") },
+                        AnimatedDropdownItem(
+                            text = "x² (Square)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Square))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("1/x (Reciprocal)") },
+                        AnimatedDropdownItem(
+                            text = "1/x (Reciprocal)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Reciprocal))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("sin") },
+                        AnimatedDropdownItem(
+                            text = "sin",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Sin))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("cos") },
+                        AnimatedDropdownItem(
+                            text = "cos",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Cos))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("tan") },
+                        AnimatedDropdownItem(
+                            text = "tan",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Tan))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("ln") },
+                        AnimatedDropdownItem(
+                            text = "ln",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Ln))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("log") },
+                        AnimatedDropdownItem(
+                            text = "log",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Log))
                                 scientificMenuExpanded = false
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("! (Factorial)") },
+                        AnimatedDropdownItem(
+                            text = "! (Factorial)",
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onAction(Actions.UnaryOperation(Operations.Factorial))
@@ -550,5 +558,53 @@ fun CalculatorScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AnimatedDropdownItem(
+    text: String,
+    onClick: () -> Unit
+) {
+    var animatePress by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (animatePress) 0.94f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessHigh
+        ),
+        label = "dropdown_scale"
+    )
+    val backgroundColor by animateColorAsState(
+        targetValue = if (animatePress) AccentBlue.copy(alpha = 0.1f) else Color.Transparent,
+        animationSpec = tween(durationMillis = 100),
+        label = "dropdown_bg"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale)
+            .background(backgroundColor)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        animatePress = true
+                        try {
+                            awaitRelease()
+                        } finally {
+                            animatePress = false
+                        }
+                    },
+                    onTap = { onClick() }
+                )
+            }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Text(
+            text = text,
+            color = DisplayText,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
