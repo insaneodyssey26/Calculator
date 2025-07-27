@@ -3,7 +3,10 @@ package com.masum.calculatorbasic
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -176,7 +179,7 @@ fun HistoryPanel(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(history, key = { "${it.expression}_${it.timestamp}" }) { item ->
-                            SwipeToDeleteHistoryItem(
+                            AnimatedSwipeToDeleteHistoryItem(
                                 item = item,
                                 onClick = { onHistoryItemClick(item.result) },
                                 onDelete = {
@@ -380,5 +383,35 @@ private fun SwipeToDeleteHistoryItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AnimatedSwipeToDeleteHistoryItem(
+    item: CalculationHistory,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    var isDeleting by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(isDeleting) {
+        if (isDeleting) {
+            delay(300)
+            onDelete()
+        }
+    }
+    
+    AnimatedVisibility(
+        visible = !isDeleting,
+        exit = fadeOut(animationSpec = tween(300)) + slideOutHorizontally(
+            targetOffsetX = { it },
+            animationSpec = tween(300)
+        )
+    ) {
+        SwipeToDeleteHistoryItem(
+            item = item,
+            onClick = onClick,
+            onDelete = { isDeleting = true }
+        )
     }
 }
