@@ -34,3 +34,15 @@ If you want to build it yourself:
 ## Want to help?
 
 Found a bug? Have a wild idea? Open an issue or send a pull request. Or just use the app and enjoy not having to do math in your head.
+
+## What's new in 2.0
+
+- New look! Buttons and colors are way nicer
+- Added a menu for scientific stuff (sin, cos, tan, log, etc.)
+- You can use brackets (parentheses) now
+- History saves even after you close the app
+- Swipe history to delete, and undo if you change your mind
+- Long-press history to copy stuff to clipboard
+- Buttons have cool tap animations
+- Vibration (haptic) feedback everywhere
+- Fixed bugs and made things smoother
